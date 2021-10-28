@@ -178,5 +178,111 @@ HAVING COUNT(s.CId) = 2
 /*25 查詢男生、女生人數*/
 select ssex,count(sid) from Student 
 group by ssex
-/*  */
-/*  */
+
+
+/*26 查詢名字中含有「風」字的學生信息*/
+SELECT * FROM Student 
+WHERE Sname like '%風%'
+
+
+/*27 查詢同名同性學生名單，並統計同名人數*/
+SELECT SId, COUNT(SId)  FROM Student 
+GROUP BY Sname
+HAVING BY COUNT(Sname) >= 2
+
+/*28 查詢 1990 年出生的學生名單*/
+SELECT * FROM Student
+WHERE year(Sage) = 1990
+
+/*29 查詢每門課程的平均成績，結果按平均成績降序排列，平均成績相同時，按課程編號升序排列*/
+SELECT CId, AVG(score) FROM SC
+GROUP BY CId
+ORDER BY AVG(score) desc, CId
+
+
+/*30 查詢平均成績大於等於 85 的所有學生的學號、姓名和平均成績*/
+SELECT s.SId, s.Sname, AVG(c.score) FROM Student s
+JOIN SC c on s.SId = c.SId
+GROUP BY c.CId
+HAVING AVG(c.score) >= 85
+
+/*31 查詢課程名稱為「數學」，且分數低於 60 的學生姓名和分數*/
+SELECT s.SId, s.Sname, c.score FROM Student s
+JOIN SC c on s.SId = c.SId
+JOIN Course cour on c.CId = cour.CId
+WHERE cour.Cname = '數學' and c.score < 60
+
+/*32 查詢所有學生的課程及分數情況（存在學生沒成績，沒選課的情況）*/
+SELECT * FROM Student s
+LEFT JOIN SC on s.sid = SC.sid
+
+/*33 查詢任何一門課程成績在 70 分以上的姓名、課程名稱和分數*/
+SELECT s.SId, s.Sname, c.score FROM Student s
+JOIN SC c on s.SId = c.SId
+JOIN Course cour on c.CId = cour.CId
+WHERE c.score > 70
+
+
+/*34 查詢存在不及格的課程*/
+SELECT * FROM SC s
+JOIN Course c on s.CId = c.CId
+WHERE s.score < 60
+GROUP BY c.CId
+
+/*35 查詢課程編號為 01 且課程成績在 80 分及以上的學生的學號和姓名*/
+SELECT s.SId, s.Sname, SC.score FROM Student s
+JOIN SC on s.SId = SC.SId
+WHERE SC.CId = '01' and SC.score > 80
+
+
+/*36 求每門課程的學生人數*/
+SELECT COUNT(SId), CId FROM SC
+GROUP BY CId
+
+/*37 成績不重復，查詢選修「張三」老師所授課程的學生中，成績最高的學生信息及其成績*/
+SELECT s.Sname, s.SId, SC.score FROM Student s
+JOIN SC on s.sid = SC.sid
+JOIN Course c on c.CId = SC.CId
+JOIN Teacher t on t.TId = c.TId
+WHERE t.tname = '張三' 
+HAVING max(SC.score)
+
+/*38 查詢不同課程成績相同的學生的學生編號、課程編號、學生成績*/
+SELECT a.SId, a.CId, a.score, b.SId, b.CId,b.score FROM SC a
+JOIN SC b on a.SId = b.SId 
+WHERE a.score = b.score and a.CId != b.CId
+GROUP BY a.CId
+
+/*39 查詢課程成績最好的前兩名*/
+SELECT SId, CId, score, COUNT(*) FROM SC a
+WHERE (SELECT COUNT(*) FROM SC b WHERE a.CId = b.CId and a.score > b.score) < 2
+ORDER BY CId, SId desc
+
+
+/*40 統計每門課程的學生選修人數（超過 5 人的課程才統計）*/
+SELECT c.Cname, COUNT(SC.SId) FROM Course c
+JOIN SC on SC.CId = c.CId
+GROUP BY SC.CId
+HAVING COUNT(SC.CId) > 5
+
+/*41 檢索至少選修兩門課程的學生學號*/
+SELECT SId, COUNT(CId) FROM SC
+GROUP BY SId
+HAVING COUNT(CId) >= 2
+
+/*42 查詢選修了全部課程的學生信息*/
+SELECT SId, COUNT(CId) FROM SC
+GROUP BY SId
+HAVING COUNT(CId) = (SELECT COUNT(*) FROM Course)
+
+/*43 查詢各學生的年齡，只按年份來算*/
+
+
+/*44 */
+
+/*45 */
+/**/
+/**/
+/**/
+/**/
+/**/
